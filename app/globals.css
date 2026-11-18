@@ -1,0 +1,149 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Color Hunt "8*4" ramp — #F9F7F7 · #DBE2EF · #3F72AF · #112D4E */
+  --canvas: #f9f7f7;       /* main content background */
+  --sidebar: #f1f3f9;      /* navigation background (a hair cooler than canvas) */
+  --surface: #ffffff;      /* cards, menus, modals */
+  --raised: #f4f6fb;       /* group headers, inputs */
+  --line: #dbe2ef;         /* hairlines */
+  --line-strong: #c9d3e6;  /* control borders */
+  --ink: #112d4e;          /* primary text */
+  --dim: #51688c;          /* secondary text */
+  --faint: #7489ab;        /* tertiary text, icons (≥3:1 on canvas) */
+  --accent: #3f72af;       /* brand */
+  --accent-hover: #36649c;
+  --accent-ink: #ffffff;
+  --accent-soft: rgba(63, 114, 175, 0.12);
+  --wash: #e8edf7;         /* hover / selected */
+  --danger: #e5484d;
+  --success: #30a46c;
+  --warning: #f2994a;
+  --shadow-color: 213 64% 19%;
+}
+
+/* ─── dark · navy family ─── */
+.dark {
+  --canvas: #0c1a2c;
+  --sidebar: #091523;
+  --surface: #112d4e;
+  --raised: #16365c;
+  --line: #24466e;
+  --line-strong: #2e5583;
+  --ink: #f9f7f7;
+  --dim: #aabdd8;
+  --faint: #7390b5;
+  --accent: #6ea2dd;
+  --accent-hover: #82b1e4;
+  --accent-ink: #0c1a2c;
+  --accent-soft: rgba(110, 162, 221, 0.18);
+  --wash: #1b3e68;
+  --danger: #f06a6e;
+  --success: #4cb782;
+  --warning: #f2994a;
+  --shadow-color: 215 70% 4%;
+}
+
+html, body { height: 100%; }
+body {
+  background: var(--canvas);
+  color: var(--ink);
+  font-family: "Inter Variable", "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-size: 13px;
+  font-feature-settings: "cv11", "ss01", "ss03";
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+* { scrollbar-width: thin; scrollbar-color: var(--line-strong) transparent; }
+*::-webkit-scrollbar { width: 10px; height: 10px; }
+*::-webkit-scrollbar-thumb { background: var(--line-strong); border-radius: 10px; border: 3px solid transparent; background-clip: content-box; }
+*::-webkit-scrollbar-track { background: transparent; }
+
+::selection { background: var(--accent-soft); }
+
+kbd, .kbd {
+  font-family: "Inter Variable", ui-sans-serif, system-ui, sans-serif;
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 4px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--line-strong);
+  border-radius: 4px;
+  background: var(--raised);
+  color: var(--dim);
+}
+
+/* motion */
+@keyframes traxr-pop { from { opacity: 0; transform: translateY(-4px) scale(0.98); } to { opacity: 1; transform: none; } }
+@keyframes traxr-fade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes traxr-modal { from { opacity: 0; transform: translateY(8px) scale(0.98); } to { opacity: 1; transform: none; } }
+@keyframes traxr-slide { from { opacity: 0; transform: translateX(16px); } to { opacity: 1; transform: none; } }
+@keyframes traxr-toast { from { opacity: 0; transform: translateY(12px) scale(0.98); } to { opacity: 1; transform: none; } }
+@keyframes traxr-shimmer { 0% { background-position: -400px 0; } 100% { background-position: 400px 0; } }
+
+.anim-pop { animation: traxr-pop 0.12s cubic-bezier(0.2, 0.8, 0.3, 1); transform-origin: top; }
+.anim-fade { animation: traxr-fade 0.14s ease-out; }
+.anim-modal { animation: traxr-modal 0.16s cubic-bezier(0.2, 0.8, 0.3, 1); }
+.anim-slide { animation: traxr-slide 0.16s cubic-bezier(0.2, 0.8, 0.3, 1); }
+.anim-toast { animation: traxr-toast 0.18s cubic-bezier(0.2, 0.8, 0.3, 1); }
+.skeleton {
+  background: linear-gradient(90deg, var(--wash) 0px, var(--raised) 120px, var(--wash) 240px);
+  background-size: 800px 100%;
+  animation: traxr-shimmer 1.4s linear infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .anim-pop, .anim-fade, .anim-modal, .anim-slide, .anim-toast { animation: none; }
+}
+
+.focus-ring:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.row-hover:hover { background: var(--wash); }
+
+/* cmdk */
+[cmdk-item][data-selected="true"] { background: var(--wash); }
+[cmdk-item][data-disabled="true"] { opacity: 0.5; }
+[cmdk-group-heading] { padding: 8px 12px 4px; font-size: 11px; font-weight: 500; color: var(--faint); }
+[cmdk-empty] { padding: 16px 12px; font-size: 12.5px; color: var(--faint); }
+
+/* ─── rich text (Tiptap) ─── */
+.prose-traxr { font-size: 14px; line-height: 1.6; color: var(--ink); word-wrap: break-word; }
+.prose-traxr.compact { font-size: 13px; line-height: 1.55; }
+.prose-traxr > * + * { margin-top: 0.55em; }
+.prose-traxr h1 { font-size: 1.45em; font-weight: 600; line-height: 1.3; margin-top: 1em; }
+.prose-traxr h2 { font-size: 1.22em; font-weight: 600; line-height: 1.35; margin-top: 0.9em; }
+.prose-traxr h3 { font-size: 1.06em; font-weight: 600; margin-top: 0.8em; }
+.prose-traxr ul { list-style: disc; padding-left: 1.4em; }
+.prose-traxr ol { list-style: decimal; padding-left: 1.4em; }
+.prose-traxr li > p { margin: 0; }
+.prose-traxr li + li { margin-top: 0.15em; }
+.prose-traxr a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+.prose-traxr code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.86em; padding: 1px 5px; border-radius: 4px; background: var(--wash); border: 1px solid var(--line); }
+.prose-traxr pre { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12.5px; padding: 12px 14px; border-radius: 8px; background: var(--raised); border: 1px solid var(--line); overflow-x: auto; }
+.prose-traxr pre code { padding: 0; border: 0; background: none; font-size: inherit; }
+.prose-traxr blockquote { border-left: 3px solid var(--line-strong); padding-left: 12px; color: var(--dim); }
+.prose-traxr hr { border: 0; border-top: 1px solid var(--line); margin: 1.2em 0; }
+.prose-traxr img { max-width: 100%; border-radius: 8px; border: 1px solid var(--line); }
+.prose-traxr ul[data-type="taskList"] { list-style: none; padding-left: 0.2em; }
+.prose-traxr ul[data-type="taskList"] li { display: flex; gap: 8px; align-items: flex-start; }
+.prose-traxr ul[data-type="taskList"] li > label { margin-top: 0.3em; }
+.prose-traxr ul[data-type="taskList"] li > label input { accent-color: var(--accent); width: 14px; height: 14px; }
+.prose-traxr ul[data-type="taskList"] li[data-checked="true"] > div { color: var(--faint); text-decoration: line-through; }
+.prose-traxr .mention { color: var(--accent); background: var(--accent-soft); border-radius: 4px; padding: 0 3px; font-weight: 500; }
+.prose-traxr .mention-query { color: var(--accent); }
+.prose-traxr p.is-editor-empty:first-child::before,
+.prose-traxr .is-empty::before { content: attr(data-placeholder); float: left; color: var(--faint); pointer-events: none; height: 0; }
+/* iOS Safari zooms the page when focused editable text is under 16px: below Tailwind's sm breakpoint the
+   editable surface is 16px (headings scale via em). Read-only rich text keeps 14px / 13px. */
+@media (max-width: 639px) {
+  .prose-traxr[contenteditable="true"] { font-size: 16px; }
+}
+.ProseMirror { outline: none; }
+.ProseMirror-selectednode { outline: 2px solid var(--accent); border-radius: 6px; }
