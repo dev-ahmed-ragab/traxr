@@ -2,17 +2,18 @@
 /* ─── Traxr · projects list (workspace-wide, or one team's projects) ─── */
 
 import { useEffect, useMemo, useState } from "react";
-import { Check, Hexagon, Plus, SlidersHorizontal } from "lucide-react";
+import { CalendarRange, Check, Hexagon, LayoutList, Plus, SlidersHorizontal } from "lucide-react";
 import { PRIORITY_RANK, useProjects } from "@/lib/model";
 import { setQueryParam, useQueryParam, type ProjectsTab } from "@/lib/router";
 import { ViewHeader, HeaderTab } from "@/components/app/Header";
 import NotFound from "@/components/app/NotFound";
-import { Button, EmptyState, IconButton, Switch } from "@/components/primitives/controls";
+import { Button, EmptyState, IconButton, Segmented, Switch } from "@/components/primitives/controls";
 import { Dropdown } from "@/components/primitives/overlay";
 import { TeamIcon } from "@/components/primitives/icons";
 import { useRoutedTeam } from "@/components/issues/shared";
 import CreateProjectModal from "@/components/projects/CreateProjectModal";
 import ProjectsTable from "@/components/projects/ProjectsTable";
+import ProjectsRoadmap from "@/components/projects/ProjectsRoadmap";
 import { useProjectStats, type Progress } from "@/components/projects/shared";
 import type { Project, ProjectStatus, Team } from "@/lib/types";
 
@@ -38,7 +39,8 @@ const ORDERINGS: { value: Ordering; label: string }[] = [
 const STATUS_RANK: Record<ProjectStatus, number> = { started: 0, paused: 1, planned: 2, backlog: 3, completed: 4, canceled: 5 };
 const PREFS_KEY = "traxr:projects-list";
 
-interface Prefs { ordering: Ordering; archived: boolean }
+type ProjectLayout = "table" | "roadmap";
+interface Prefs { ordering: Ordering; archived: boolean; layout: ProjectLayout }
 
 function sortProjects(list: Project[], ordering: Ordering, progress: Record<string, Progress>): Project[] {
   if (ordering === "default") return list;
@@ -62,9 +64,10 @@ function loadPrefs(): Prefs {
     return {
       ordering: ORDERINGS.some((o) => o.value === v.ordering) ? (v.ordering as Ordering) : "default",
       archived: Boolean(v.archived),
+      layout: v.layout === "roadmap" ? "roadmap" : "table",
     };
   } catch {
-    return { ordering: "default", archived: false };
+    return { ordering: "default", archived: false, layout: "table" };
   }
 }
 
@@ -138,6 +141,14 @@ function ProjectsList({ routeTab, team }: { routeTab: ProjectsTab; team?: Team }
         ))}
         actions={
           <>
+            <Segmented
+              value={prefs.layout}
+              options={[
+                { value: "table", label: <span className="flex items-center gap-1.5"><LayoutList size={13} /> Table</span> },
+                { value: "roadmap", label: <span className="flex items-center gap-1.5"><CalendarRange size={13} /> Roadmap</span> },
+              ]}
+              onChange={(v) => updatePrefs({ layout: v })}
+            />
             <Dropdown
               width={240}
               align="end"
@@ -179,9 +190,15 @@ function ProjectsList({ routeTab, team }: { routeTab: ProjectsTab; team?: Team }
         }
       />
 
-      <div className="min-h-0 flex-1 overflow-y-auto">
+      <div className="min-h-0 flex-1 overflow-hidden flex flex-col">
         {visible.length ? (
-          <ProjectsTable projects={visible} progress={progress} />
+          prefs.layout === "roadmap" ? (
+            <ProjectsRoadmap projects={visible} progress={progress} />
+          ) : (
+            <div className="min-h-0 flex-1 overflow-y-auto">
+              <ProjectsTable projects={visible} progress={progress} />
+            </div>
+          )
         ) : scoped.length ? (
           <EmptyState
             icon={<Hexagon size={28} strokeWidth={1.5} />}
